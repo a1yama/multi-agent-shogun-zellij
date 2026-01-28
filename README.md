@@ -43,7 +43,7 @@
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/YOUR_USERNAME/multi-agent-shogun-zellij.git ~/multi-agent-shogun
+git clone https://github.com/a1yama/multi-agent-shogun-zellij.git ~/multi-agent-shogun
 
 # ディレクトリに移動
 cd ~/multi-agent-shogun
