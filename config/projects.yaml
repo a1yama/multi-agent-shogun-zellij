@@ -1,89 +1,116 @@
 # プロジェクト設定ファイル
-# マイクロサービス構成の例
+# 複数会社・複数プロジェクト管理
 
 # ============================================================
-# システム全体の定義
+# 殿のプロファイル
 # ============================================================
-systems:
-  ecommerce:
-    name: "ECサイト"
-    description: "マイクロサービス構成のECプラットフォーム"
-    services:
-      - api_gateway
-      - user_service
-      - order_service
-      - product_service
-      - notification_service
-    context: "context/ecommerce_system.md"
+profile:
+  name: "殿"
+  primary_languages:
+    - Go
+    - PHP
+  secondary_languages:
+    - Python
+  preferences:
+    - "シンプルな設計を好む"
+    - "過剰な抽象化を避ける"
 
 # ============================================================
-# 個別サービス（リポジトリ）の定義
+# 会社（クライアント）定義
+# ============================================================
+companies:
+  # 例: A社
+  company_a:
+    name: "A社"
+    description: "ECサイト開発"
+    contact: "担当者名"
+    slack_channel: "#company-a"
+    projects:
+      - ec_backend
+      - ec_admin
+
+  # 例: B社
+  company_b:
+    name: "B社"
+    description: "SaaS開発"
+    contact: "担当者名"
+    projects:
+      - saas_api
+      - saas_worker
+
+  # 例: C社
+  company_c:
+    name: "C社"
+    description: "データ分析基盤"
+    contact: "担当者名"
+    projects:
+      - data_pipeline
+
+  # 会社を追加:
+  # company_x:
+  #   name: "X社"
+  #   description: "説明"
+  #   projects:
+  #     - project_name
+
+# ============================================================
+# プロジェクト定義
 # ============================================================
 projects:
-  # API Gateway
-  api_gateway:
-    name: "API Gateway"
-    path: "~/repos/api-gateway"
-    description: "認証・ルーティング・レート制限"
-    port: 8080
-    tech_stack: ["Go", "Kong"]
-    depends_on: []
-    context: "context/api_gateway.md"
+  # ─────────────────────────────────────────────────────────
+  # A社のプロジェクト
+  # ─────────────────────────────────────────────────────────
+  ec_backend:
+    company: company_a
+    name: "ECバックエンド"
+    path: "~/work/company-a/ec-backend"
+    description: "商品・注文管理API"
+    tech_stack: ["Go", "PostgreSQL", "Redis"]
+    context: "context/company_a/ec_backend.md"
 
-  # User Service
-  user_service:
-    name: "User Service"
-    path: "~/repos/user-service"
-    description: "ユーザー管理・認証・プロファイル"
-    port: 8081
-    tech_stack: ["Node.js", "TypeScript", "PostgreSQL"]
-    depends_on: ["notification_service"]
-    context: "context/user_service.md"
+  ec_admin:
+    company: company_a
+    name: "EC管理画面"
+    path: "~/work/company-a/ec-admin"
+    description: "管理者用ダッシュボード"
+    tech_stack: ["PHP", "Laravel", "MySQL"]
+    context: "context/company_a/ec_admin.md"
 
-  # Order Service
-  order_service:
-    name: "Order Service"
-    path: "~/repos/order-service"
-    description: "注文処理・決済連携"
-    port: 8082
-    tech_stack: ["Python", "FastAPI", "PostgreSQL"]
-    depends_on: ["user_service", "product_service", "notification_service"]
-    context: "context/order_service.md"
+  # ─────────────────────────────────────────────────────────
+  # B社のプロジェクト
+  # ─────────────────────────────────────────────────────────
+  saas_api:
+    company: company_b
+    name: "SaaS API"
+    path: "~/work/company-b/saas-api"
+    description: "マルチテナントAPI"
+    tech_stack: ["Go", "gRPC", "PostgreSQL"]
+    context: "context/company_b/saas_api.md"
 
-  # Product Service
-  product_service:
-    name: "Product Service"
-    path: "~/repos/product-service"
-    description: "商品管理・在庫・カタログ"
-    port: 8083
-    tech_stack: ["Go", "MongoDB"]
-    depends_on: []
-    context: "context/product_service.md"
+  saas_worker:
+    company: company_b
+    name: "SaaS Worker"
+    path: "~/work/company-b/saas-worker"
+    description: "バックグラウンドジョブ"
+    tech_stack: ["Go", "RabbitMQ"]
+    context: "context/company_b/saas_worker.md"
 
-  # Notification Service
-  notification_service:
-    name: "Notification Service"
-    path: "~/repos/notification-service"
-    description: "メール・SMS・Push通知"
-    port: 8084
-    tech_stack: ["Node.js", "Redis", "RabbitMQ"]
-    depends_on: []
-    context: "context/notification_service.md"
-
-  # Shared Libraries（共通ライブラリ）
-  shared_libs:
-    name: "Shared Libraries"
-    path: "~/repos/shared-libs"
-    description: "共通型定義・ユーティリティ"
-    tech_stack: ["TypeScript"]
-    depends_on: []
-    context: "context/shared_libs.md"
+  # ─────────────────────────────────────────────────────────
+  # C社のプロジェクト
+  # ─────────────────────────────────────────────────────────
+  data_pipeline:
+    company: company_c
+    name: "データパイプライン"
+    path: "~/work/company-c/data-pipeline"
+    description: "ETL処理・分析基盤"
+    tech_stack: ["Python", "Airflow", "BigQuery"]
+    context: "context/company_c/data_pipeline.md"
 
 # ============================================================
 # 現在の作業対象
 # ============================================================
-# 単一サービスの場合
-active_project: null
+# 単一プロジェクト指定
+active_project: null  # 例: ec_backend
 
-# 複数サービスをまたぐ作業の場合
-active_system: null  # 例: ecommerce
+# 会社単位で指定（その会社の全プロジェクトが対象）
+active_company: null  # 例: company_a
