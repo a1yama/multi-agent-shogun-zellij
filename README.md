@@ -127,6 +127,28 @@ done
 
 詳細は [config/projects.yaml](config/projects.yaml) を参照してください。
 
+## Memory MCP（永続メモリ）
+
+殿の好みや重要な決定事項をセッション間で記憶します。
+
+```bash
+# MCPサーバーが提供する機能
+mcp__memory__read_graph      # メモリを読み込む
+mcp__memory__create_entities # エンティティを作成
+mcp__memory__add_observations # 観察を追加
+```
+
+詳細は [docs/mcp-setup.md](docs/mcp-setup.md) を参照してください。
+
+## スキル自動生成
+
+足軽が作業中に発見したパターンを自動的にスキル化できます。
+
+```bash
+# スキル生成
+./skills/skill-creator/create_skill.sh "skill-name" "説明" "作成者"
+```
+
 ## オリジナルとの違い
 
 | 項目 | オリジナル (tmux) | 本リポジトリ (Zellij) |

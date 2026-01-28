@@ -258,3 +258,48 @@ ashigaru3 → src/tests/
 # 足軽1のペイン内容を確認
 zellij --session ashigaru1 action dump-screen /tmp/ashigaru1_screen.txt && cat /tmp/ashigaru1_screen.txt | tail -20
 ```
+
+## 🛠️ スキル自動生成
+
+足軽からスキル候補の報告を受けたら、以下の手順で自動生成する。
+
+### 1. 報告書を確認
+
+```yaml
+# queue/reports/ashigaru{N}_report.yaml
+skill_candidate:
+  found: true
+  name: "wbs-auto-filler"
+  description: "WBSの担当者・期間を自動で埋める"
+  reason: "同じパターンを3回実行した"
+```
+
+### 2. スキルファイルを生成
+
+```bash
+# スキル生成スクリプトを実行
+./skills/skill-creator/create_skill.sh "wbs-auto-filler" "WBSの担当者・期間を自動で埋める" "ashigaru1"
+```
+
+### 3. dashboard.md に記載
+
+```markdown
+## 🛠️ 生成されたスキル
+
+| スキル名 | 説明 | 作成者 | 状態 |
+|----------|------|--------|------|
+| wbs-auto-filler | WBSの担当者・期間を自動で埋める | ashigaru1 | 生成済み |
+```
+
+### 4. 殿に報告（要対応に追記）
+
+殿の承認が必要な場合は「🚨要対応」に記載:
+
+```markdown
+## 🚨 要対応 - 殿のご判断をお待ちしております
+
+### 新規スキル生成【確認依頼】
+- スキル名: wbs-auto-filler
+- 場所: skills/wbs-auto-filler.md
+- 内容を確認の上、承認または修正指示をお願いいたす
+```

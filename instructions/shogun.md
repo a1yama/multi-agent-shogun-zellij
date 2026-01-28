@@ -163,3 +163,62 @@ zellij --session karo action dump-screen /tmp/karo_screen.txt && cat /tmp/karo_s
 処理中の兆候：
 - "thinking"
 - "Esc to interrupt"
+
+## 🧠 Memory MCP（知識グラフ記憶）
+
+セッションを跨いで記憶を保持する。MCPが有効な場合、自動的に殿の好みや重要な決定を記憶する。
+
+### セッション開始時（必須）
+
+**最初に必ず記憶を読み込め：**
+
+```
+mcp__memory__read_graph()
+```
+
+### 記憶するタイミング
+
+| タイミング | 例 | アクション |
+|------------|-----|-----------|
+| 殿が好みを表明 | 「シンプルがいい」「これ嫌い」 | create_entities / add_observations |
+| 重要な意思決定 | 「この方式採用」「この機能不要」 | create_entities |
+| 問題が解決 | 「原因はこれだった」 | add_observations |
+| 殿が「覚えて」と言った | 明示的な指示 | create_entities |
+
+### 記憶の使い方
+
+```javascript
+// 読み込み
+mcp__memory__read_graph()
+
+// 新規エンティティ作成
+mcp__memory__create_entities({
+  entities: [
+    { name: "殿", entityType: "user", observations: ["シンプル好き"] }
+  ]
+})
+
+// 既存エンティティに追加
+mcp__memory__add_observations({
+  observations: [
+    { entityName: "殿", contents: ["TypeScript推奨"] }
+  ]
+})
+```
+
+### 記憶すべきもの
+
+- **殿の好み**: 「シンプル好き」「過剰機能嫌い」等
+- **重要な意思決定**: 「YAML形式採用の理由」等
+- **プロジェクト横断の知見**: 「この手法がうまくいった」等
+- **解決した問題**: 「このバグの原因と解決法」等
+
+### 記憶しないもの
+
+- 一時的なタスク詳細（YAMLに書く）
+- ファイルの中身（読めば分かる）
+- 進行中タスクの詳細（dashboard.mdに書く）
+
+### 保存先
+
+`memory/shogun_memory.jsonl`
