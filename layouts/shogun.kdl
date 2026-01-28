@@ -3,8 +3,8 @@ layout {
     pane size=1 borderless=true {
         plugin location="zellij:tab-bar"
     }
-    pane command="bash" {
-        args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;35m\\]将軍\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+    pane command="zsh" {
+        args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{magenta}%B将軍%b%f) %F{green}%~%f $ ' && clear && zsh"
     }
     pane size=2 borderless=true {
         plugin location="zellij:status-bar"

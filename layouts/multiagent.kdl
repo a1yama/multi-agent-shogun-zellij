@@ -4,40 +4,40 @@ layout {
         plugin location="zellij:tab-bar"
     }
     pane split_direction="horizontal" {
-        // 上段: karo, ashigaru3, ashigaru6
+        // 上段
         pane split_direction="vertical" size="33%" {
-            pane name="karo" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;31m\\]karo\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="karo" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{red}%Bkaro%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
-            pane name="ashigaru1" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru1\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru1" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru1%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
-            pane name="ashigaru2" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru2\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru2" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru2%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
         }
-        // 中段: ashigaru1, ashigaru4, ashigaru7
+        // 中段
         pane split_direction="vertical" size="33%" {
-            pane name="ashigaru3" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru3\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru3" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru3%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
-            pane name="ashigaru4" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru4\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru4" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru4%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
-            pane name="ashigaru5" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru5\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru5" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru5%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
         }
-        // 下段: ashigaru2, ashigaru5, ashigaru8
+        // 下段
         pane split_direction="vertical" size="34%" {
-            pane name="ashigaru6" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru6\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru6" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru6%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
-            pane name="ashigaru7" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru7\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru7" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru7%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
-            pane name="ashigaru8" command="bash" {
-                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru8\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            pane name="ashigaru8" command="zsh" {
+                args "-c" "cd ~/multi-agent-shogun && export PROMPT='(%F{blue}%Bashigaru8%b%f) %F{green}%~%f $ ' && clear && zsh"
             }
         }
     }
