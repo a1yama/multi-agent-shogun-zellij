@@ -1,0 +1,89 @@
+# プロジェクト設定ファイル
+# マイクロサービス構成の例
+
+# ============================================================
+# システム全体の定義
+# ============================================================
+systems:
+  ecommerce:
+    name: "ECサイト"
+    description: "マイクロサービス構成のECプラットフォーム"
+    services:
+      - api_gateway
+      - user_service
+      - order_service
+      - product_service
+      - notification_service
+    context: "context/ecommerce_system.md"
+
+# ============================================================
+# 個別サービス（リポジトリ）の定義
+# ============================================================
+projects:
+  # API Gateway
+  api_gateway:
+    name: "API Gateway"
+    path: "~/repos/api-gateway"
+    description: "認証・ルーティング・レート制限"
+    port: 8080
+    tech_stack: ["Go", "Kong"]
+    depends_on: []
+    context: "context/api_gateway.md"
+
+  # User Service
+  user_service:
+    name: "User Service"
+    path: "~/repos/user-service"
+    description: "ユーザー管理・認証・プロファイル"
+    port: 8081
+    tech_stack: ["Node.js", "TypeScript", "PostgreSQL"]
+    depends_on: ["notification_service"]
+    context: "context/user_service.md"
+
+  # Order Service
+  order_service:
+    name: "Order Service"
+    path: "~/repos/order-service"
+    description: "注文処理・決済連携"
+    port: 8082
+    tech_stack: ["Python", "FastAPI", "PostgreSQL"]
+    depends_on: ["user_service", "product_service", "notification_service"]
+    context: "context/order_service.md"
+
+  # Product Service
+  product_service:
+    name: "Product Service"
+    path: "~/repos/product-service"
+    description: "商品管理・在庫・カタログ"
+    port: 8083
+    tech_stack: ["Go", "MongoDB"]
+    depends_on: []
+    context: "context/product_service.md"
+
+  # Notification Service
+  notification_service:
+    name: "Notification Service"
+    path: "~/repos/notification-service"
+    description: "メール・SMS・Push通知"
+    port: 8084
+    tech_stack: ["Node.js", "Redis", "RabbitMQ"]
+    depends_on: []
+    context: "context/notification_service.md"
+
+  # Shared Libraries（共通ライブラリ）
+  shared_libs:
+    name: "Shared Libraries"
+    path: "~/repos/shared-libs"
+    description: "共通型定義・ユーティリティ"
+    tech_stack: ["TypeScript"]
+    depends_on: []
+    context: "context/shared_libs.md"
+
+# ============================================================
+# 現在の作業対象
+# ============================================================
+# 単一サービスの場合
+active_project: null
+
+# 複数サービスをまたぐ作業の場合
+active_system: null  # 例: ecommerce

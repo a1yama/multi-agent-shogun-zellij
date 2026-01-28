@@ -1,0 +1,47 @@
+// 家老・足軽セッション用レイアウト（3x3グリッド）
+layout {
+    pane size=1 borderless=true {
+        plugin location="zellij:tab-bar"
+    }
+    pane split_direction="horizontal" {
+        // 上段: karo, ashigaru3, ashigaru6
+        pane split_direction="vertical" size="33%" {
+            pane name="karo" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;31m\\]karo\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+            pane name="ashigaru1" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru1\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+            pane name="ashigaru2" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru2\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+        }
+        // 中段: ashigaru1, ashigaru4, ashigaru7
+        pane split_direction="vertical" size="33%" {
+            pane name="ashigaru3" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru3\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+            pane name="ashigaru4" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru4\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+            pane name="ashigaru5" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru5\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+        }
+        // 下段: ashigaru2, ashigaru5, ashigaru8
+        pane split_direction="vertical" size="34%" {
+            pane name="ashigaru6" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru6\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+            pane name="ashigaru7" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru7\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+            pane name="ashigaru8" command="bash" {
+                args "-c" "cd ~/multi-agent-shogun && export PS1='(\\[\\033[1;34m\\]ashigaru8\\[\\033[0m\\]) \\[\\033[1;32m\\]\\w\\[\\033[0m\\]\\$ ' && clear && bash"
+            }
+        }
+    }
+    pane size=2 borderless=true {
+        plugin location="zellij:status-bar"
+    }
+}

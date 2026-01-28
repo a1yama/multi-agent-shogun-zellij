@@ -1,0 +1,33 @@
+# multi-agent-shogun 設定ファイル
+# Zellij版 for macOS
+
+# 言語設定
+# ja: 日本語のみ
+# en: 英語（戦国風日本語 + 翻訳併記）
+language: ja
+
+# スクリーンショット保存先（必要に応じて変更）
+screenshot_path: ~/multi-agent-shogun/screenshots
+
+# Zellijセッション名
+sessions:
+  shogun: shogun
+  karo: karo
+  ashigaru_prefix: ashigaru  # ashigaru1, ashigaru2, ... となる
+
+# エージェント数
+agent_count:
+  ashigaru: 8
+
+# Claude Code 設定
+claude:
+  shogun:
+    model: opus
+    thinking_tokens: 0
+    skip_permissions: true
+  karo:
+    model: default
+    skip_permissions: true
+  ashigaru:
+    model: default
+    skip_permissions: true
