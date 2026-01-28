@@ -1,11 +1,26 @@
+# ============================================================
 # プロジェクト設定ファイル
-# 複数会社・複数プロジェクト管理
+# ============================================================
+#
+# 【使い方】
+# 環境に応じて以下のいずれかのパターンを使用してください。
+#
+# ■ パターンA: 複数会社管理（個人PC向け）
+#   - 複数クライアントの仕事を管理する場合
+#   - 会社間の情報分離が必要な場合
+#   - companies セクションと projects セクションの両方を使用
+#
+# ■ パターンB: 単一企業管理（貸与PC向け）
+#   - 1社のプロジェクトのみ管理する場合
+#   - companies セクションは不要、projects のみ使用
+#
+# 使わないパターンはコメントアウトまたは削除してください。
+# ============================================================
 
 # ============================================================
-# 殿のプロファイル
+# 殿のプロファイル（共通）
 # ============================================================
 profile:
-  name: "殿"
   primary_languages:
     - Go
     - PHP
@@ -15,102 +30,87 @@ profile:
     - "シンプルな設計を好む"
     - "過剰な抽象化を避ける"
 
-# ============================================================
+# ############################################################
+# パターンA: 複数会社管理（個人PC向け）
+# ############################################################
+
 # 会社（クライアント）定義
-# ============================================================
 companies:
-  # 例: A社
   company_a:
     name: "A社"
-    description: "ECサイト開発"
-    contact: "担当者名"
-    slack_channel: "#company-a"
+    description: "プロジェクト概要"
     projects:
-      - ec_backend
-      - ec_admin
+      - project_a1
+      - project_a2
 
-  # 例: B社
   company_b:
     name: "B社"
-    description: "SaaS開発"
-    contact: "担当者名"
+    description: "プロジェクト概要"
     projects:
-      - saas_api
-      - saas_worker
+      - project_b1
 
-  # 例: C社
-  company_c:
-    name: "C社"
-    description: "データ分析基盤"
-    contact: "担当者名"
-    projects:
-      - data_pipeline
-
-  # 会社を追加:
+  # 会社を追加する場合:
   # company_x:
   #   name: "X社"
   #   description: "説明"
   #   projects:
-  #     - project_name
+  #     - project_x1
 
-# ============================================================
-# プロジェクト定義
-# ============================================================
+# プロジェクト定義（会社に紐づく）
 projects:
-  # ─────────────────────────────────────────────────────────
-  # A社のプロジェクト
-  # ─────────────────────────────────────────────────────────
-  ec_backend:
+  # --- A社のプロジェクト ---
+  project_a1:
     company: company_a
-    name: "ECバックエンド"
-    path: "~/work/company-a/ec-backend"
-    description: "商品・注文管理API"
-    tech_stack: ["Go", "PostgreSQL", "Redis"]
-    context: "context/company_a/ec_backend.md"
+    name: "プロジェクト名"
+    path: "~/work/company-a/project-a1"
+    tech_stack: ["Go", "PostgreSQL"]
+    context: "context/company_a/project_a1.md"
 
-  ec_admin:
+  project_a2:
     company: company_a
-    name: "EC管理画面"
-    path: "~/work/company-a/ec-admin"
-    description: "管理者用ダッシュボード"
-    tech_stack: ["PHP", "Laravel", "MySQL"]
-    context: "context/company_a/ec_admin.md"
+    name: "プロジェクト名"
+    path: "~/work/company-a/project-a2"
+    tech_stack: ["PHP", "Laravel"]
+    context: "context/company_a/project_a2.md"
 
-  # ─────────────────────────────────────────────────────────
-  # B社のプロジェクト
-  # ─────────────────────────────────────────────────────────
-  saas_api:
+  # --- B社のプロジェクト ---
+  project_b1:
     company: company_b
-    name: "SaaS API"
-    path: "~/work/company-b/saas-api"
-    description: "マルチテナントAPI"
-    tech_stack: ["Go", "gRPC", "PostgreSQL"]
-    context: "context/company_b/saas_api.md"
+    name: "プロジェクト名"
+    path: "~/work/company-b/project-b1"
+    tech_stack: ["Go", "gRPC"]
+    context: "context/company_b/project_b1.md"
 
-  saas_worker:
-    company: company_b
-    name: "SaaS Worker"
-    path: "~/work/company-b/saas-worker"
-    description: "バックグラウンドジョブ"
-    tech_stack: ["Go", "RabbitMQ"]
-    context: "context/company_b/saas_worker.md"
-
-  # ─────────────────────────────────────────────────────────
-  # C社のプロジェクト
-  # ─────────────────────────────────────────────────────────
-  data_pipeline:
-    company: company_c
-    name: "データパイプライン"
-    path: "~/work/company-c/data-pipeline"
-    description: "ETL処理・分析基盤"
-    tech_stack: ["Python", "Airflow", "BigQuery"]
-    context: "context/company_c/data_pipeline.md"
-
-# ============================================================
 # 現在の作業対象
-# ============================================================
-# 単一プロジェクト指定
-active_project: null  # 例: ec_backend
+active_company: null   # 例: company_a（会社単位で指定）
+active_project: null   # 例: project_a1（プロジェクト単位で指定）
 
-# 会社単位で指定（その会社の全プロジェクトが対象）
-active_company: null  # 例: company_a
+
+# ############################################################
+# パターンB: 単一企業管理（貸与PC向け）
+# ############################################################
+#
+# 以下のように companies セクションを削除し、
+# projects のみでシンプルに管理できます。
+#
+# projects:
+#   api_server:
+#     name: "APIサーバー"
+#     path: "~/repos/api-server"
+#     tech_stack: ["Go", "PostgreSQL"]
+#     context: "context/api_server.md"
+#
+#   admin_panel:
+#     name: "管理画面"
+#     path: "~/repos/admin-panel"
+#     tech_stack: ["PHP", "Laravel"]
+#     context: "context/admin_panel.md"
+#
+#   batch_jobs:
+#     name: "バッチ処理"
+#     path: "~/repos/batch-jobs"
+#     tech_stack: ["Python"]
+#     context: "context/batch_jobs.md"
+#
+# active_project: null
+# ############################################################
