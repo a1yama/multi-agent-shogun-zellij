@@ -67,11 +67,9 @@ cd ~/multi-agent-shogun
 ./shutsujin_departure.sh
 ```
 
-### 2. 将軍に接続
+### 2. セッションが自動的に開きます
 
-```bash
-zellij attach shogun
-```
+起動後、自動的にセッションにアタッチされます。10ペイン（将軍1 + 家老1 + 足軽8）が表示されます。
 
 ### 3. 指示を出す
 
@@ -87,19 +85,16 @@ zellij attach shogun
 
 | コマンド | 説明 |
 |----------|------|
-| `zellij attach shogun` | 将軍に接続 |
-| `zellij attach karo` | 家老に接続 |
-| `zellij attach ashigaru1` | 足軽1に接続 |
+| `zellij attach shogun` | セッションに再接続 |
 | `zellij list-sessions` | セッション一覧 |
-| `Ctrl+O, w` | セッション切り替え（接続中） |
+| `Ctrl+P` / `Alt+←→↑↓` | ペイン移動（接続中） |
+| `Ctrl+Q` | セッション終了（接続中） |
 
 ### 5. 終了
 
 ```bash
-# 全セッションを終了
-for s in shogun karo ashigaru{1..8}; do
-  zellij delete-session $s --force 2>/dev/null
-done
+# セッションを終了
+zellij delete-session shogun --force
 ```
 
 ## ディレクトリ構造

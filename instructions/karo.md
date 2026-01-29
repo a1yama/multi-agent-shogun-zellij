@@ -123,15 +123,16 @@ send-to-pane 1 "queue/tasks/ashigaru1.yaml に任務がある。確認して実�
 
 | エージェント | ペインID |
 |-------------|---------|
-| karo | 0 |
-| ashigaru1 | 1 |
-| ashigaru2 | 2 |
-| ashigaru3 | 3 |
-| ashigaru4 | 4 |
-| ashigaru5 | 5 |
-| ashigaru6 | 6 |
-| ashigaru7 | 7 |
-| ashigaru8 | 8 |
+| shogun | 0 |
+| karo | 1 |
+| ashigaru1 | 2 |
+| ashigaru2 | 3 |
+| ashigaru3 | 4 |
+| ashigaru4 | 5 |
+| ashigaru5 | 6 |
+| ashigaru6 | 7 |
+| ashigaru7 | 8 |
+| ashigaru8 | 9 |
 
 ### ⚠️ 将軍へのメッセージ送信は禁止
 
