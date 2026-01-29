@@ -88,25 +88,24 @@ date "+%Y-%m-%d %H:%M"
 date "+%Y-%m-%dT%H:%M:%S"
 ```
 
-## 🔴 Zellij でのメッセージ送信方法（超重要）
+## 🔴 メッセージ送信方法（超重要）
 
-### ❌ 絶対禁止パターン
+### 事前準備（セッション開始時に1回）
 
 ```bash
-# ダメな例: 1行で書く
-zellij --session karo action write-chars 'メッセージ' && zellij --session karo action write 13
+source ~/multi-agent-shogun/scripts/send-keys.sh
 ```
 
-### ✅ 正しい方法（2回に分ける）
+### ✅ 家老にメッセージを送信
 
-**【1回目】** メッセージを送る：
 ```bash
-zellij --session karo action write-chars 'queue/shogun_to_karo.yaml に新しい指示がある。確認して実行せよ。'
+send-to-agent karo "queue/shogun_to_karo.yaml に新しい指示がある。確認して実行せよ。"
 ```
 
-**【2回目】** Enterを送る：
+### ✅ ペインIDで送信（家老 = ID: 0）
+
 ```bash
-zellij --session karo action write 13
+send-to-pane 0 "queue/shogun_to_karo.yaml に新しい指示がある。確認して実行せよ。"
 ```
 
 ## 指示の書き方

@@ -32,6 +32,10 @@ log_war() {
     echo -e "\033[1;31m【戦】\033[0m $1"
 }
 
+log_error() {
+    echo -e "\033[1;31m【誤】\033[0m $1"
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # オプション解析
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -59,10 +63,8 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "セッション操作:"
             echo "  zellij attach shogun          # 将軍セッションに接続"
-            echo "  zellij attach karo            # 家老セッションに接続"
-            echo "  zellij attach ashigaru1       # 足軽1セッションに接続"
+            echo "  zellij attach multiagent      # 家老・足軽セッションに接続"
             echo "  zellij list-sessions          # セッション一覧"
-            echo "  zellij kill-session shogun    # 将軍セッションを終了"
             echo ""
             exit 0
             ;;
@@ -75,12 +77,46 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# 前提条件チェック
+# ═══════════════════════════════════════════════════════════════════════════════
+check_prerequisites() {
+    log_info "🔍 前提条件を確認中..."
+
+    # jq
+    if ! command -v jq &> /dev/null; then
+        log_error "jq がインストールされていません"
+        echo "  brew install jq"
+        exit 1
+    fi
+
+    # zellij
+    if ! command -v zellij &> /dev/null; then
+        log_error "zellij がインストールされていません"
+        echo "  brew install zellij"
+        exit 1
+    fi
+
+    # プラグイン
+    PLUGIN_PATH="$HOME/.config/zellij/plugins/zellij-send-keys.wasm"
+    if [ ! -f "$PLUGIN_PATH" ]; then
+        log_info "📦 zellij-send-keys プラグインをインストール中..."
+        mkdir -p "$HOME/.config/zellij/plugins"
+        curl -sL https://github.com/atani/zellij-send-keys/releases/latest/download/zellij-send-keys.wasm \
+            -o "$PLUGIN_PATH"
+        log_success "  └─ プラグインインストール完了"
+    fi
+
+    log_success "✅ 前提条件OK"
+}
+
+check_prerequisites
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # 出陣バナー表示
 # ═══════════════════════════════════════════════════════════════════════════════
 show_battle_cry() {
     clear
 
-    # タイトルバナー（色付き）
     echo ""
     echo -e "\033[1;31m╔══════════════════════════════════════════════════════════════════════════════════╗\033[0m"
     echo -e "\033[1;31m║\033[0m \033[1;33m███████╗██╗  ██╗██╗   ██╗████████╗███████╗██╗   ██╗     ██╗██╗███╗   ██╗\033[0m \033[1;31m║\033[0m"
@@ -94,7 +130,6 @@ show_battle_cry() {
     echo -e "\033[1;31m╚══════════════════════════════════════════════════════════════════════════════════╝\033[0m"
     echo ""
 
-    # 足軽隊列
     echo -e "\033[1;34m  ╔═════════════════════════════════════════════════════════════════════════════╗\033[0m"
     echo -e "\033[1;34m  ║\033[0m                    \033[1;37m【 足 軽 隊 列 ・ 八 名 配 備 】\033[0m                      \033[1;34m║\033[0m"
     echo -e "\033[1;34m  ╚═════════════════════════════════════════════════════════════════════════════╝\033[0m"
@@ -114,7 +149,6 @@ ASHIGARU_EOF
     echo -e "                    \033[1;36m「「「 はっ！！ 出陣いたす！！ 」」」\033[0m"
     echo ""
 
-    # システム情報
     echo -e "\033[1;33m  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\033[0m"
     echo -e "\033[1;33m  ┃\033[0m  \033[1;37m🏯 multi-agent-shogun\033[0m  〜 \033[1;36m戦国マルチエージェント統率システム\033[0m 〜           \033[1;33m┃\033[0m"
     echo -e "\033[1;33m  ┃\033[0m                                                                           \033[1;33m┃\033[0m"
@@ -125,7 +159,6 @@ ASHIGARU_EOF
     echo ""
 }
 
-# バナー表示実行
 show_battle_cry
 
 echo -e "  \033[1;33m天下布武！陣立てを開始いたす\033[0m (Setting up the battlefield)"
@@ -136,11 +169,8 @@ echo ""
 # ═══════════════════════════════════════════════════════════════════════════════
 log_info "🧹 既存の陣を撤収中..."
 
-# Zellijセッション削除（エラーを無視）
-SESSIONS=("shogun" "karo" "ashigaru1" "ashigaru2" "ashigaru3" "ashigaru4" "ashigaru5" "ashigaru6" "ashigaru7" "ashigaru8")
-for session in "${SESSIONS[@]}"; do
-    zellij delete-session "$session" --force 2>/dev/null && log_info "  └─ ${session}陣、撤収完了" || true
-done
+zellij delete-session shogun --force 2>/dev/null && log_info "  └─ shogun陣、撤収完了" || true
+zellij delete-session multiagent --force 2>/dev/null && log_info "  └─ multiagent陣、撤収完了" || true
 
 log_success "✅ 陣払い完了"
 
@@ -158,53 +188,8 @@ result: null
 EOF
 done
 
-# キューファイルリセット
 cat > ./queue/shogun_to_karo.yaml << 'EOF'
 queue: []
-EOF
-
-cat > ./queue/karo_to_ashigaru.yaml << 'EOF'
-assignments:
-  ashigaru1:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
-  ashigaru2:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
-  ashigaru3:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
-  ashigaru4:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
-  ashigaru5:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
-  ashigaru6:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
-  ashigaru7:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
-  ashigaru8:
-    task_id: null
-    description: null
-    target_path: null
-    status: idle
 EOF
 
 log_success "✅ 軍議記録、破棄完了"
@@ -246,174 +231,112 @@ log_success "  └─ ダッシュボード初期化完了"
 echo ""
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# STEP 4: Zellijセッション作成
+# STEP 4: Zellijレイアウト作成
 # ═══════════════════════════════════════════════════════════════════════════════
-log_war "⚔️ Zellijセッションを構築中..."
+log_war "⚔️ Zellijレイアウトを準備中..."
 
-# セッション作成関数（PTY問題を回避）
-create_zellij_session() {
-    local session_name="$1"
-    # script コマンドで仮想TTYを提供
-    script -q /dev/null zellij -s "$session_name" &
-    disown
+# multiagentセッション用レイアウト（3x3グリッド: karo + ashigaru1-8）
+cat > /tmp/multiagent_layout.kdl << 'EOF'
+layout {
+    pane split_direction="vertical" {
+        pane split_direction="horizontal" size="33%" {
+            pane name="karo"
+            pane name="ashigaru1"
+            pane name="ashigaru2"
+        }
+        pane split_direction="horizontal" size="33%" {
+            pane name="ashigaru3"
+            pane name="ashigaru4"
+            pane name="ashigaru5"
+        }
+        pane split_direction="horizontal" size="34%" {
+            pane name="ashigaru6"
+            pane name="ashigaru7"
+            pane name="ashigaru8"
+        }
+    }
 }
+EOF
 
-# 将軍セッション
-log_info "  └─ 将軍の本陣を構築中..."
-create_zellij_session "shogun"
-sleep 1
+# shogunセッション用レイアウト
+cat > /tmp/shogun_layout.kdl << 'EOF'
+layout {
+    pane name="shogun"
+}
+EOF
 
-# 家老セッション
-log_info "  └─ 家老の陣を構築中..."
-create_zellij_session "karo"
-sleep 0.5
-
-# 足軽セッション（8名）
-log_info "  └─ 足軽の陣を構築中..."
-for i in {1..8}; do
-    create_zellij_session "ashigaru${i}"
-    sleep 0.3
-done
-
-sleep 2
-log_success "✅ 全Zellijセッション構築完了"
+log_success "  └─ レイアウト準備完了"
 echo ""
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# STEP 5: Claude Code 起動（--setup-only でスキップ）
+# STEP 5: セッション起動案内
 # ═══════════════════════════════════════════════════════════════════════════════
-if [ "$SETUP_ONLY" = false ]; then
-    log_war "👑 全軍に Claude Code を召喚中..."
-
-    # 将軍（Opusモデル、思考なし）
-    log_info "  └─ 将軍、召喚中..."
-    zellij --session shogun action write-chars "MAX_THINKING_TOKENS=0 claude --model opus --dangerously-skip-permissions"
-    sleep 0.3
-    zellij --session shogun action write 13  # Enter
-    sleep 1
-
-    # 家老
-    log_info "  └─ 家老、召喚中..."
-    zellij --session karo action write-chars "claude --dangerously-skip-permissions"
-    sleep 0.3
-    zellij --session karo action write 13  # Enter
-    sleep 0.5
-
-    # 足軽（8名）
-    log_info "  └─ 足軽、召喚中..."
-    for i in {1..8}; do
-        zellij --session "ashigaru${i}" action write-chars "claude --dangerously-skip-permissions"
-        sleep 0.2
-        zellij --session "ashigaru${i}" action write 13  # Enter
-        sleep 0.3
-    done
-
-    log_success "✅ 全軍 Claude Code 起動完了"
-    echo ""
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # STEP 6: 各エージェントに指示書を読み込ませる
-    # ═══════════════════════════════════════════════════════════════════════════
-    log_war "📜 各エージェントに指示書を読み込ませ中..."
-    echo ""
-    echo "  Claude Code の起動を待機中（15秒）..."
-    sleep 15
-
-    # 将軍に指示書を読み込ませる
-    log_info "  └─ 将軍に指示書を伝達中..."
-    zellij --session shogun action write-chars "instructions/shogun.md を読んで役割を理解せよ。"
-    sleep 0.3
-    zellij --session shogun action write 13
-
-    # 家老に指示書を読み込ませる
-    sleep 2
-    log_info "  └─ 家老に指示書を伝達中..."
-    zellij --session karo action write-chars "instructions/karo.md を読んで役割を理解せよ。"
-    sleep 0.3
-    zellij --session karo action write 13
-
-    # 足軽に指示書を読み込ませる（1-8）
-    sleep 2
-    log_info "  └─ 足軽に指示書を伝達中..."
-    for i in {1..8}; do
-        zellij --session "ashigaru${i}" action write-chars "instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽${i}号である。"
-        sleep 0.2
-        zellij --session "ashigaru${i}" action write 13
-        sleep 0.3
-    done
-
-    log_success "✅ 全軍に指示書伝達完了"
-    echo ""
-fi
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# STEP 7: 環境確認・完了メッセージ
-# ═══════════════════════════════════════════════════════════════════════════════
-log_info "🔍 陣容を確認中..."
-echo ""
-echo "  ┌──────────────────────────────────────────────────────────┐"
-echo "  │  📺 Zellij陣容 (Sessions)                                │"
-echo "  └──────────────────────────────────────────────────────────┘"
-zellij list-sessions 2>/dev/null | sed 's/^/     /' || echo "     (セッション取得中...)"
-echo ""
-echo "  ┌──────────────────────────────────────────────────────────┐"
-echo "  │  📋 布陣図 (Formation)                                   │"
-echo "  └──────────────────────────────────────────────────────────┘"
-echo ""
-echo "     【shogunセッション】将軍の本陣"
-echo "     ┌─────────────────────────────┐"
-echo "     │  shogun (将軍)              │  ← 総大将・プロジェクト統括"
-echo "     └─────────────────────────────┘"
-echo ""
-echo "     【家老・足軽セッション】各独立セッション"
-echo "     ┌─────────┬─────────┬─────────┐"
-echo "     │  karo   │ashigaru1│ashigaru2│"
-echo "     │  (家老) │ (足軽1) │ (足軽2) │"
-echo "     ├─────────┼─────────┼─────────┤"
-echo "     │ashigaru3│ashigaru4│ashigaru5│"
-echo "     │ (足軽3) │ (足軽4) │ (足軽5) │"
-echo "     ├─────────┼─────────┼─────────┤"
-echo "     │ashigaru6│ashigaru7│ashigaru8│"
-echo "     │ (足軽6) │ (足軽7) │ (足軽8) │"
-echo "     └─────────┴─────────┴─────────┘"
-echo ""
-
 echo ""
 echo "  ╔══════════════════════════════════════════════════════════╗"
-echo "  ║  🏯 出陣準備完了！天下布武！                              ║"
+echo "  ║  🏯 陣立て準備完了！                                      ║"
 echo "  ╚══════════════════════════════════════════════════════════╝"
 echo ""
+echo "  次のステップ（手動で実行してください）:"
+echo ""
+echo "  ┌──────────────────────────────────────────────────────────┐"
+echo "  │  1. 家老・足軽セッションを起動（ターミナル1）:            │"
+echo "  │     zellij -s multiagent --layout /tmp/multiagent_layout.kdl │"
+echo "  │                                                          │"
+echo "  │  2. プラグイン権限を付与（multiagentセッション内で）:     │"
+echo "  │     zellij plugin -- file:\$HOME/.config/zellij/plugins/zellij-send-keys.wasm │"
+echo "  │     → ダイアログで Grant をクリック                      │"
+echo "  │                                                          │"
+echo "  │  3. 将軍セッションを起動（ターミナル2）:                  │"
+echo "  │     zellij -s shogun --layout /tmp/shogun_layout.kdl     │"
+echo "  │                                                          │"
+echo "  │  4. プラグイン権限を付与（shogunセッション内で）:         │"
+echo "  │     zellij plugin -- file:\$HOME/.config/zellij/plugins/zellij-send-keys.wasm │"
+echo "  │     → ダイアログで Grant をクリック                      │"
+echo "  └──────────────────────────────────────────────────────────┘"
+echo ""
 
-if [ "$SETUP_ONLY" = true ]; then
-    echo "  ⚠️  セットアップのみモード: Claude Codeは未起動です"
-    echo ""
-    echo "  手動でClaude Codeを起動するには:"
+if [ "$SETUP_ONLY" = false ]; then
     echo "  ┌──────────────────────────────────────────────────────────┐"
-    echo "  │  zellij attach shogun                                    │"
-    echo "  │  # 接続後、claude --dangerously-skip-permissions を実行  │"
+    echo "  │  5. 各ペインでClaude Codeを起動:                         │"
+    echo "  │                                                          │"
+    echo "  │     【将軍ペイン】                                       │"
+    echo "  │     MAX_THINKING_TOKENS=0 claude --model opus --dangerously-skip-permissions │"
+    echo "  │                                                          │"
+    echo "  │     【家老・足軽ペイン（各ペインで）】                    │"
+    echo "  │     claude --dangerously-skip-permissions                │"
+    echo "  │                                                          │"
+    echo "  │  6. ヘルパースクリプトを読み込み（各ペインで）:          │"
+    echo "  │     source ~/multi-agent-shogun/scripts/send-keys.sh     │"
+    echo "  │                                                          │"
+    echo "  │  7. 指示書を読み込ませる:                                │"
+    echo "  │     【将軍】instructions/shogun.md を読んで役割を理解せよ │"
+    echo "  │     【家老】instructions/karo.md を読んで役割を理解せよ   │"
+    echo "  │     【足軽】instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽N号である │"
     echo "  └──────────────────────────────────────────────────────────┘"
-    echo ""
 fi
 
-echo "  次のステップ:"
+echo ""
 echo "  ┌──────────────────────────────────────────────────────────┐"
-echo "  │  将軍の本陣にアタッチして命令を開始:                      │"
-echo "  │     zellij attach shogun                                 │"
-echo "  │                                                          │"
-echo "  │  家老の陣を確認する:                                      │"
-echo "  │     zellij attach karo                                   │"
-echo "  │                                                          │"
-echo "  │  足軽の陣を確認する:                                      │"
-echo "  │     zellij attach ashigaru1                              │"
-echo "  │                                                          │"
-echo "  │  全セッション一覧:                                        │"
-echo "  │     zellij list-sessions                                 │"
-echo "  │                                                          │"
-echo "  │  セッション切り替え（接続中）:                            │"
-echo "  │     Ctrl+O, w でセッション選択                            │"
-echo "  │                                                          │"
-echo "  │  ※ 各エージェントは指示書を読み込み済み。                 │"
-echo "  │    すぐに命令を開始できます。                             │"
+echo "  │  📋 ペインID対応表（multiagentセッション）               │"
+echo "  ├──────────────────────────────────────────────────────────┤"
+echo "  │  ID: 0 = karo (家老)                                     │"
+echo "  │  ID: 1 = ashigaru1                                       │"
+echo "  │  ID: 2 = ashigaru2                                       │"
+echo "  │  ID: 3 = ashigaru3                                       │"
+echo "  │  ID: 4 = ashigaru4                                       │"
+echo "  │  ID: 5 = ashigaru5                                       │"
+echo "  │  ID: 6 = ashigaru6                                       │"
+echo "  │  ID: 7 = ashigaru7                                       │"
+echo "  │  ID: 8 = ashigaru8                                       │"
+echo "  └──────────────────────────────────────────────────────────┘"
+echo ""
+echo "  ┌──────────────────────────────────────────────────────────┐"
+echo "  │  📡 キー送信コマンド（ヘルパー読み込み後）               │"
+echo "  ├──────────────────────────────────────────────────────────┤"
+echo "  │  send-to-agent karo \"メッセージ\"                        │"
+echo "  │  send-to-agent ashigaru1 \"メッセージ\"                   │"
+echo "  │  send-to-pane 0 \"メッセージ\"                            │"
+echo "  │  send-to-shogun \"メッセージ\"                            │"
 echo "  └──────────────────────────────────────────────────────────┘"
 echo ""
 echo "  ════════════════════════════════════════════════════════════"

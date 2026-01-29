@@ -96,31 +96,28 @@ queue/tasks/ashigaru2.yaml  ← 足軽2はこれだけ
 
 **他の足軽のファイルは読むな。**
 
-## 🔴 Zellij でのメッセージ送信（超重要）
+## 🔴 メッセージ送信方法（超重要）
 
-### ❌ 絶対禁止パターン
+### 事前準備（セッション開始時に1回）
 
 ```bash
-zellij --session karo action write-chars 'メッセージ' && zellij --session karo action write 13
+source ~/multi-agent-shogun/scripts/send-keys.sh
 ```
 
-### ✅ 正しい方法（2回に分ける）
+### ✅ 家老にメッセージを送信
 
-**【1回目】**
 ```bash
-zellij --session karo action write-chars 'ashigaru{N}、任務完了でござる。報告書を確認されよ。'
-```
+# エージェント名で送信
+send-to-agent karo "ashigaru{N}、任務完了でござる。報告書を確認されよ。"
 
-**【2回目】**
-```bash
-zellij --session karo action write 13
+# または ペインIDで送信（karo = ID: 0）
+send-to-pane 0 "ashigaru{N}、任務完了でござる。報告書を確認されよ。"
 ```
 
 ### ⚠️ 報告送信は義務（省略禁止）
 
-- タスク完了後、**必ず** zellij action で家老に報告
+- タスク完了後、**必ず** send-to-agent で家老に報告
 - 報告なしでは任務完了扱いにならない
-- **必ず2回に分けて実行**
 
 ## 報告の書き方
 

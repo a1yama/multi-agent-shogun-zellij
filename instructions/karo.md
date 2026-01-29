@@ -101,25 +101,37 @@ date "+%Y-%m-%d %H:%M"       # dashboard用
 date "+%Y-%m-%dT%H:%M:%S"    # YAML用
 ```
 
-## 🔴 Zellij でのメッセージ送信方法（超重要）
+## 🔴 メッセージ送信方法（超重要）
 
-### ❌ 絶対禁止パターン
+### 事前準備（セッション開始時に1回）
 
 ```bash
-zellij --session ashigaru1 action write-chars 'メッセージ' && zellij --session ashigaru1 action write 13
+source ~/multi-agent-shogun/scripts/send-keys.sh
 ```
 
-### ✅ 正しい方法（2回に分ける）
+### ✅ 足軽にメッセージを送信
 
-**【1回目】**
 ```bash
-zellij --session ashigaru1 action write-chars 'queue/tasks/ashigaru1.yaml に任務がある。確認して実行せよ。'
+# エージェント名で送信
+send-to-agent ashigaru1 "queue/tasks/ashigaru1.yaml に任務がある。確認して実行せよ。"
+
+# または ペインIDで送信（ashigaru1 = ID: 1）
+send-to-pane 1 "queue/tasks/ashigaru1.yaml に任務がある。確認して実行せよ。"
 ```
 
-**【2回目】**
-```bash
-zellij --session ashigaru1 action write 13
-```
+### ペインID対応表
+
+| エージェント | ペインID |
+|-------------|---------|
+| karo | 0 |
+| ashigaru1 | 1 |
+| ashigaru2 | 2 |
+| ashigaru3 | 3 |
+| ashigaru4 | 4 |
+| ashigaru5 | 5 |
+| ashigaru6 | 6 |
+| ashigaru7 | 7 |
+| ashigaru8 | 8 |
 
 ### ⚠️ 将軍へのメッセージ送信は禁止
 

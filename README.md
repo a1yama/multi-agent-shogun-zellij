@@ -37,7 +37,13 @@
 - macOS
 - [Zellij](https://zellij.dev/) (`brew install zellij`)
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)
+- [jq](https://jqlang.github.io/jq/) (`brew install jq`)
 - Node.js v20+
+
+## プラグイン
+
+[zellij-send-keys](https://github.com/atani/zellij-send-keys) プラグインを使用しています。
+起動スクリプト実行時に自動でインストールされます。
 
 ## インストール
 
