@@ -105,6 +105,7 @@ echo ""
 # ═══════════════════════════════════════════════════════════════════════════════
 log_info "🧹 既存の陣を撤収中..."
 zellij delete-session shogun --force 2>/dev/null || true
+zellij delete-session multiagent --force 2>/dev/null || true
 log_success "✅ 陣払い完了"
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -169,43 +170,44 @@ HELPER="source ${SCRIPT_DIR}/scripts/send-keys.sh"
 SHOGUN_PROMPT="instructions/shogun.md を読んで役割を理解せよ"
 KARO_PROMPT="instructions/karo.md を読んで役割を理解せよ"
 
-# 各エージェントの起動コマンド
-SHOGUN_START="${HELPER} && MAX_THINKING_TOKENS=0 claude --model opus --dangerously-skip-permissions '${SHOGUN_PROMPT}'"
-KARO_START="${HELPER} && claude --dangerously-skip-permissions '${KARO_PROMPT}'"
-
-# 足軽用の起動コマンド生成関数
-ashigaru_cmd() {
-    local n=\$1
-    echo "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽${n}号である'"
-}
-
-if [ "$SETUP_ONLY" = true ]; then
-    SHOGUN_START="${HELPER}"
-    KARO_START="${HELPER}"
-fi
-
-# 統合セッション用レイアウト（10ペイン: shogun + karo + ashigaru1-8）
+# ═══════════════════════════════════════════════════════════════════════════════
+# shogunセッション用レイアウト（1ペイン）
+# ═══════════════════════════════════════════════════════════════════════════════
 if [ "$SETUP_ONLY" = true ]; then
 cat > /tmp/shogun_layout.kdl << 'LAYOUT_EOF'
 layout {
-    pane split_direction="horizontal" {
-        pane split_direction="vertical" size="20%" {
-            pane name="shogun"
+    pane name="shogun"
+}
+LAYOUT_EOF
+else
+cat > /tmp/shogun_layout.kdl << LAYOUT_EOF
+layout {
+    pane name="shogun" command="zsh" {
+        args "-i" "-c" "${HELPER} && MAX_THINKING_TOKENS=0 claude --model opus --dangerously-skip-permissions '${SHOGUN_PROMPT}'; exec zsh"
+    }
+}
+LAYOUT_EOF
+fi
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# multiagentセッション用レイアウト（9ペイン: karo + ashigaru1-8）
+# ═══════════════════════════════════════════════════════════════════════════════
+if [ "$SETUP_ONLY" = true ]; then
+cat > /tmp/multiagent_layout.kdl << 'LAYOUT_EOF'
+layout {
+    pane split_direction="vertical" {
+        pane split_direction="horizontal" size="33%" {
             pane name="karo"
-        }
-        pane split_direction="vertical" size="20%" {
             pane name="ashigaru1"
             pane name="ashigaru2"
         }
-        pane split_direction="vertical" size="20%" {
+        pane split_direction="horizontal" size="33%" {
             pane name="ashigaru3"
             pane name="ashigaru4"
-        }
-        pane split_direction="vertical" size="20%" {
             pane name="ashigaru5"
-            pane name="ashigaru6"
         }
-        pane split_direction="vertical" size="20%" {
+        pane split_direction="horizontal" size="34%" {
+            pane name="ashigaru6"
             pane name="ashigaru7"
             pane name="ashigaru8"
         }
@@ -213,18 +215,13 @@ layout {
 }
 LAYOUT_EOF
 else
-cat > /tmp/shogun_layout.kdl << LAYOUT_EOF
+cat > /tmp/multiagent_layout.kdl << LAYOUT_EOF
 layout {
-    pane split_direction="horizontal" {
-        pane split_direction="vertical" size="20%" {
-            pane name="shogun" command="zsh" {
-                args "-i" "-c" "${HELPER} && MAX_THINKING_TOKENS=0 claude --model opus --dangerously-skip-permissions '${SHOGUN_PROMPT}'; exec zsh"
-            }
+    pane split_direction="vertical" {
+        pane split_direction="horizontal" size="33%" {
             pane name="karo" command="zsh" {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions '${KARO_PROMPT}'; exec zsh"
             }
-        }
-        pane split_direction="vertical" size="20%" {
             pane name="ashigaru1" command="zsh" {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽1号である'; exec zsh"
             }
@@ -232,23 +229,21 @@ layout {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽2号である'; exec zsh"
             }
         }
-        pane split_direction="vertical" size="20%" {
+        pane split_direction="horizontal" size="33%" {
             pane name="ashigaru3" command="zsh" {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽3号である'; exec zsh"
             }
             pane name="ashigaru4" command="zsh" {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽4号である'; exec zsh"
             }
-        }
-        pane split_direction="vertical" size="20%" {
             pane name="ashigaru5" command="zsh" {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽5号である'; exec zsh"
             }
+        }
+        pane split_direction="horizontal" size="34%" {
             pane name="ashigaru6" command="zsh" {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽6号である'; exec zsh"
             }
-        }
-        pane split_direction="vertical" size="20%" {
             pane name="ashigaru7" command="zsh" {
                 args "-i" "-c" "${HELPER} && claude --dangerously-skip-permissions 'instructions/ashigaru.md を読んで役割を理解せよ。汝は足軽7号である'; exec zsh"
             }
@@ -273,12 +268,20 @@ echo "  ╔═══════════════════════
 echo "  ║  🏯 出陣！天下布武！                                      ║"
 echo "  ╚══════════════════════════════════════════════════════════╝"
 echo ""
-echo "  ペインID対応表:"
-echo "  ┌─────────┬─────────┬─────────┬─────────┬─────────┐"
-echo "  │ 0:将軍  │ 2:足軽1 │ 4:足軽3 │ 6:足軽5 │ 8:足軽7 │"
-echo "  ├─────────┼─────────┼─────────┼─────────┼─────────┤"
-echo "  │ 1:家老  │ 3:足軽2 │ 5:足軽4 │ 7:足軽6 │ 9:足軽8 │"
-echo "  └─────────┴─────────┴─────────┴─────────┴─────────┘"
+echo "  【2セッション構成】"
+echo "  ┌────────────────────────────────────────────────────────┐"
+echo "  │  shogun セッション     : 将軍（殿との対話用）           │"
+echo "  │  multiagent セッション : 家老 + 足軽1-8（作業用）       │"
+echo "  └────────────────────────────────────────────────────────┘"
+echo ""
+echo "  multiagentセッション ペインID対応表:"
+echo "  ┌─────────┬─────────┬─────────┐"
+echo "  │ 0:家老  │ 1:足軽1 │ 2:足軽2 │"
+echo "  ├─────────┼─────────┼─────────┤"
+echo "  │ 3:足軽3 │ 4:足軽4 │ 5:足軽5 │"
+echo "  ├─────────┼─────────┼─────────┤"
+echo "  │ 6:足軽6 │ 7:足軽7 │ 8:足軽8 │"
+echo "  └─────────┴─────────┴─────────┘"
 echo ""
 
 if [ "$SETUP_ONLY" = false ]; then
@@ -287,11 +290,18 @@ fi
 
 echo ""
 echo "  ════════════════════════════════════════════════════════════"
-echo "   セッションに接続中..."
+echo "   セッションを起動中..."
 echo "  ════════════════════════════════════════════════════════════"
 echo ""
 
+# multiagentセッションをバックグラウンドで起動
+zellij -s multiagent -n /tmp/multiagent_layout.kdl &
+sleep 2
+
+echo "  multiagent セッション起動完了"
+echo "  shogun セッションに接続します..."
+echo ""
 sleep 1
 
-# セッションを起動してアタッチ
+# shogunセッションを起動してアタッチ
 exec zellij -s shogun -n /tmp/shogun_layout.kdl

@@ -69,7 +69,9 @@ cd ~/multi-agent-shogun
 
 ### 2. セッションが自動的に開きます
 
-起動後、自動的にセッションにアタッチされます。10ペイン（将軍1 + 家老1 + 足軽8）が表示されます。
+起動後、2つのセッションが作成され、shogunセッションにアタッチされます：
+- **shogun** セッション: 将軍（殿との対話用）
+- **multiagent** セッション: 家老 + 足軽1-8（作業用、バックグラウンド）
 
 ### 3. 指示を出す
 
@@ -85,16 +87,18 @@ cd ~/multi-agent-shogun
 
 | コマンド | 説明 |
 |----------|------|
-| `zellij attach shogun` | セッションに再接続 |
+| `zellij attach shogun` | 将軍セッションに接続 |
+| `zellij attach multiagent` | 家老・足軽セッションに接続 |
 | `zellij list-sessions` | セッション一覧 |
-| `Ctrl+P` / `Alt+←→↑↓` | ペイン移動（接続中） |
+| `Ctrl+O, w` | セッション切り替え（接続中） |
 | `Ctrl+Q` | セッション終了（接続中） |
 
 ### 5. 終了
 
 ```bash
-# セッションを終了
+# 全セッションを終了
 zellij delete-session shogun --force
+zellij delete-session multiagent --force
 ```
 
 ## ディレクトリ構造

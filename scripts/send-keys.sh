@@ -7,20 +7,19 @@
 # プラグインパス
 export ZELLIJ_PLUGIN="file:$HOME/.config/zellij/plugins/zellij-send-keys.wasm"
 
-# ペインIDマッピング（shogunセッション内）
-# レイアウト: 5列×2行
+# ペインIDマッピング（multiagentセッション内）
+# レイアウト: 3列×3行
 declare -A PANE_IDS
 PANE_IDS=(
-    ["shogun"]=0
-    ["karo"]=1
-    ["ashigaru1"]=2
-    ["ashigaru2"]=3
-    ["ashigaru3"]=4
-    ["ashigaru4"]=5
-    ["ashigaru5"]=6
-    ["ashigaru6"]=7
-    ["ashigaru7"]=8
-    ["ashigaru8"]=9
+    ["karo"]=0
+    ["ashigaru1"]=1
+    ["ashigaru2"]=2
+    ["ashigaru3"]=3
+    ["ashigaru4"]=4
+    ["ashigaru5"]=5
+    ["ashigaru6"]=6
+    ["ashigaru7"]=7
+    ["ashigaru8"]=8
 )
 
 # ============================================================
@@ -33,7 +32,7 @@ send-to-pane() {
     local pane_id="$1"
     local text="$2"
     local send_enter="${3:-true}"
-    local session="${ZELLIJ_SESSION_NAME:-shogun}"
+    local session="${ZELLIJ_SESSION_NAME:-multiagent}"
 
     local json_payload
     json_payload=$(jq -cn --argjson pane_id "$pane_id" --arg text "$text" --argjson send_enter "$send_enter" \
@@ -68,13 +67,21 @@ send-to-agent() {
 }
 
 # ============================================================
-# send-to-shogun: 将軍ペインにキー送信
+# send-to-shogun: 将軍セッションにキー送信
 # ============================================================
 # 使い方: send-to-shogun "message" [send_enter]
 send-to-shogun() {
     local text="$1"
     local send_enter="${2:-true}"
-    send-to-pane 0 "$text" "$send_enter"
+
+    local json_payload
+    json_payload=$(jq -cn --argjson pane_id 0 --arg text "$text" --argjson send_enter "$send_enter" \
+        '{pane_id: $pane_id, text: $text, send_enter: $send_enter}')
+
+    ZELLIJ_SESSION_NAME="shogun" zellij action pipe \
+        --plugin "$ZELLIJ_PLUGIN" \
+        --name send_keys \
+        -- "$json_payload"
 }
 
 # ============================================================
